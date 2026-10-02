@@ -59,7 +59,15 @@
 
 Параметр `-Header` копирует готовую строку `Authorization: Bearer <токен>`. Без него копируется только ключ для отдельного поля Token. Параметр `-Show` явно разрешает вывод выбранного значения в консоль вместо буфера обмена; можно присвоить его переменной: `$token = .\Get-MCP-Token.ps1 -Server Blender -Show`. Параметр `-MappingPath` задаёт другую карту серверов. Команда читает существующий `.runtime\config.json` выбранного MCP, сохраняет ключи и настройки, не обращается в сеть и не пишет секреты в файлы репозитория.
 
-Для отдельно установленного CMD / PC Control MCP ключ хранится в другой папке. Когда он уже создан этим сервером, скопируйте его так:
+Сам сервер CMD / PC Control MCP теперь входит в репозиторий: [исходники и инструкция](cmd-mcp/README.md). У него отдельные скрипты запуска, он не входит в `Start All`. Из корня репозитория запустите:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\cmd-mcp\scripts\Start-Remote.ps1
+```
+
+При первом запуске устанавливаются зависимости, собирается сервер и создаётся ваш собственный ключ. Нужны поддерживаемая версия Node.js не ниже 20.20 и установленный `cloudflared`; путь можно передать через `-CloudflaredPath 'C:\Tools\cloudflared.exe'`. Сервер выполняет CMD-команды сразу с правами запустившего его Windows-пользователя. Папка Filesystem не ограничивает CMD.
+
+Ключ CMD хранится в отдельной папке. Когда он уже создан этим сервером, скопируйте его так:
 
 ```powershell
 .\Token-CMD.cmd
@@ -73,6 +81,12 @@ $cmdDataDirectory = if ($env:PC_MCP_DATA_DIR) { $env:PC_MCP_DATA_DIR } else { Jo
 ```
 
 Если при запуске CMD MCP папка данных задавалась отдельным параметром, присвойте её путь переменной `$cmdDataDirectory`. Команды Launcher и `Get-MCP-Token.ps1` рассчитаны на Filesystem, Blender, Roblox Studio и Rojo; CMD MCP использует собственные скрипты запуска. Не загружайте его `token.json` на GitHub.
+
+Штатная остановка CMD и его туннеля из корня репозитория:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\cmd-mcp\scripts\Stop.ps1
+```
 
 В Notion для соответствующего custom MCP добавьте выданный HTTPS URL с окончанием `/mcp` и настройте HTTP заголовок `Authorization` со значением `Bearer <токен>`. Если форма разделяет Prefix и Token, укажите `Bearer` в Prefix, а в Token вставьте только значение ключа. Это статическая авторизация заголовком; не вставляйте ключ в OAuth scopes. Notion описывает header-based authentication в [документации MCP connections](https://www.notion.com/help/mcp-connections-for-custom-agents).
 

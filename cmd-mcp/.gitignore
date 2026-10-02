@@ -1,0 +1,11 @@
+node_modules/
+dist/
+bin/
+.runtime/
+.env
+.env.*
+*.log
+*.pid
+*.tsbuildinfo
+token.json
+connection.json

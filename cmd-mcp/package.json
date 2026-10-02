@@ -1,0 +1,23 @@
+{
+  "name": "pc-control-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Authenticated Windows CMD and process control over MCP Streamable HTTP",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js serve",
+    "test": "npm run build && node --test tests/integration.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.31.0",
+    "express": "^5.1.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3"
+  }
+}

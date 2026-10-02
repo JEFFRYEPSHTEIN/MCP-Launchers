@@ -2,6 +2,8 @@
 
 PowerShell commands for starting, checking, and stopping four locally installed MCP servers: Filesystem, Blender, Roblox Studio, and Rojo. The scripts open a temporary HTTPS tunnel so a remote MCP client such as Notion can reach a server on this PC.
 
+The repository also includes the **complete Windows CMD / PC Control MCP source** in [cmd-mcp/](cmd-mcp/README.md): command execution, program and process management, and PC status over authenticated MCP. It has its own startup scripts; `Start All` manages the four servers above.
+
 > [!IMPORTANT]
 > **Choose your working folder before connecting a client and starting work.** Filesystem needs an allowed folder; Rojo needs the folder containing your project's `default.project.json`. The `projectDirectory` in the server map is the MCP installation folder. Read [Choose or change a working folder](WORKING-FOLDERS.md) before running `Start All`.
 >
@@ -10,7 +12,7 @@ PowerShell commands for starting, checking, and stopping four locally installed 
 ## Requirements
 
 - Windows PowerShell 5.1 or later and Node.js.
-- The compatible MCP server projects already installed on this PC. This repository contains launch and management scripts; it does not install Blender, Roblox Studio, Rojo, the MCP servers, or a tunnel provider.
+- The four compatible Filesystem, Blender, Roblox Studio, and Rojo MCP server projects already installed on this PC. Their launchers do not install those servers or applications. The included CMD MCP has separate [setup instructions](cmd-mcp/README.md); a tunnel provider must also be installed for remote connections.
 - Network access for the HTTPS tunnel. Your PC must stay on while a remote client uses a local server.
 
 ## Configure this PC
@@ -93,7 +95,15 @@ For a different server map, add `-MappingPath 'C:\path\to\private-servers.json'`
 
 ### Separate CMD / PC Control MCP
 
-If you also installed the separate CMD / PC Control MCP, copy its existing token with:
+The actual CMD MCP source, launch scripts, dependency lock, and tests are included in [cmd-mcp/](cmd-mcp/README.md). To install its dependencies, build it, start it, and print a checked HTTPS URL, run from the repository root:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\cmd-mcp\scripts\Start-Remote.ps1
+```
+
+Use a supported Node.js release at least 20.20 and install `cloudflared` in PATH, or pass `-CloudflaredPath 'C:\Tools\cloudflared.exe'`. The default port is `8765`; runtime files are stored in `%LOCALAPPDATA%\PcControlMcp`. Each Windows user creates their own Bearer token on first setup. CMD tools execute without server confirmation as the account that starts the server. You can supply a working directory for a command; Filesystem's allowed folder does not limit CMD's access.
+
+Copy its existing token with:
 
 ```powershell
 .\Token-CMD.cmd
@@ -106,7 +116,13 @@ $cmdDataDirectory = if ($env:PC_MCP_DATA_DIR) { $env:PC_MCP_DATA_DIR } else { Jo
 (Get-Content -LiteralPath (Join-Path $cmdDataDirectory 'token.json') -Raw | ConvertFrom-Json).token | Set-Clipboard
 ```
 
-The token must already have been created by that server's setup. If its data directory was set with a launch argument, assign that directory to `$cmdDataDirectory` instead. This repository's launcher and `Get-MCP-Token.ps1` support the four servers listed above; CMD / PC Control uses its own launch scripts and private token store. Keep its `token.json` out of GitHub as well.
+The token must already have been created by that server's setup. For a custom `PC_MCP_DATA_DIR`, use the same value for startup and token retrieval. The four-server launcher and `Get-MCP-Token.ps1` support Filesystem, Blender, Roblox Studio, and Rojo; CMD / PC Control uses its own launch scripts and private token store. Keep its `token.json` out of GitHub as well.
+
+To stop CMD and its tunnel through its supported shutdown API:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\cmd-mcp\scripts\Stop.ps1
+```
 
 The individual `.cmd` launchers start one service. For Blender, open the scene and enable its MCP add-on. For Roblox Studio, open a Place and enable **Assistant → … → Manage MCP Servers → Enable Studio as MCP server**. Rojo's MCP service and Rojo's Studio synchronization are separate: start synchronization with the `rojo_serve` tool when needed.
 
