@@ -28,7 +28,15 @@ Double-click `Start-All.cmd`, or from PowerShell in this folder run:
 .\MCP-Commands.ps1 Start All
 ```
 
-Copy the current `/mcp` URL printed for each server into a separate custom MCP connection in your client. Use the matching server's existing Bearer token; the launcher prints the path to its local `connection.md`. A temporary HTTPS hostname can change after a restart, so update that server's URL in the client when it changes. Never publish the token or connection file.
+Copy the current `/mcp` URL printed for each server into a separate custom MCP connection in your client. Each server has a different Bearer token; details are below. A temporary HTTPS hostname can change after a restart, so update that server's URL in the client when it changes. Never publish a token or `connection.md` file.
+
+## Get a Bearer token for Notion
+
+The token belongs to the installed MCP server. This launcher does not issue a GitHub token or create a shared MCP key. Start all servers with `Start-All.cmd` or run `./MCP-Commands.ps1 Start Filesystem` (replace `Filesystem` with `Blender`, `Roblox-Studio`, or `Rojo`). The output includes `Key/settings file:` followed by the path to that server's `connection.md`. Open that file and copy its token value. Use a separate token for each server.
+
+In Notion, add the server's printed `/mcp` URL as a custom MCP connection. Configure header-based authentication with the header name `Authorization` and value `Bearer <token>`. If Notion shows separate fields for token and prefix, paste only the token into the token field and set the prefix to `Bearer`. Do not put the token in OAuth scopes. Notion's custom MCP setup supports header-based API-key or Bearer authentication ([Notion guide](https://www.notion.com/help/mcp-connections-for-custom-agents)).
+
+Restarting a tunnel can change the URL; it does not by itself change the server token. Update the URL in Notion and keep using that server's existing token. If a token must be rotated, follow the installed MCP server's own instructions and reconnect Notion with the replacement. Never use a GitHub personal access token here, and never commit an MCP token, `.runtime/`, or `connection.md` to GitHub.
 
 The individual `.cmd` launchers start one service. For Blender, open the scene and enable its MCP add-on. For Roblox Studio, open a Place and enable **Assistant → … → Manage MCP Servers → Enable Studio as MCP server**. Rojo's MCP service and Rojo's Studio synchronization are separate: start synchronization with the `rojo_serve` tool when needed.
 
