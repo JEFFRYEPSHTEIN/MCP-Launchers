@@ -34,6 +34,35 @@
 
 Чтобы получить токен, запустите нужный сервер командой `Start` и найдите в выводе строку `Key/settings file:`. Откройте указанный `connection.md` в папке именно этого MCP-сервера и скопируйте оттуда значение токена. У Filesystem, Blender, Roblox Studio и Rojo разные токены. Скрипт использует ключ сервера и только сообщает путь к его файлу.
 
+Для быстрого получения уже созданного токена откройте `Get-MCP-Token.cmd` двойным щелчком и вставьте полный путь к программе или папке её MCP-сервера. Ключ скопируется в буфер обмена. Программа по указанному пути не запускается; сервер может быть остановлен.
+
+```powershell
+.\Get-MCP-Token.ps1 'C:\путь к программе\blender.exe'
+.\Get-MCP-Token.ps1 'C:\путь к программе\RobloxStudioBeta.exe'
+.\Get-MCP-Token.ps1 'C:\путь к программе\rojo.exe'
+.\Get-MCP-Token.ps1 'C:\путь к\filesystem-mcp'
+```
+
+По известному имени исполняемого файла выбирается соответствующий MCP из вашей локальной карты серверов. Для общего `node.exe` используйте путь к конкретной папке MCP или укажите сервер явно:
+
+```powershell
+.\Get-MCP-Token.ps1 -Server Filesystem
+.\Get-MCP-Token.ps1 -Server Blender
+.\Get-MCP-Token.ps1 -Server Roblox-Studio
+.\Get-MCP-Token.ps1 -Server Rojo
+```
+
+Параметр `-Header` копирует готовую строку `Authorization: Bearer <токен>`. Без него копируется только ключ для отдельного поля Token. Параметр `-Show` явно разрешает вывод выбранного значения в консоль вместо буфера обмена; можно присвоить его переменной: `$token = .\Get-MCP-Token.ps1 -Server Blender -Show`. Параметр `-MappingPath` задаёт другую карту серверов. Команда читает существующий `.runtime\config.json` выбранного MCP, сохраняет ключи и настройки, не обращается в сеть и не пишет секреты в файлы репозитория.
+
+Для отдельно установленного CMD / PC Control MCP ключ хранится в другой папке. Когда он уже создан этим сервером, скопируйте его так:
+
+```powershell
+$cmdDataDirectory = if ($env:PC_MCP_DATA_DIR) { $env:PC_MCP_DATA_DIR } else { Join-Path $env:LOCALAPPDATA 'PcControlMcp' }
+(Get-Content -LiteralPath (Join-Path $cmdDataDirectory 'token.json') -Raw | ConvertFrom-Json).token | Set-Clipboard
+```
+
+Если при запуске CMD MCP папка данных задавалась отдельным параметром, присвойте её путь переменной `$cmdDataDirectory`. Команды Launcher и `Get-MCP-Token.ps1` рассчитаны на Filesystem, Blender, Roblox Studio и Rojo; CMD MCP использует собственные скрипты запуска. Не загружайте его `token.json` на GitHub.
+
 В Notion для соответствующего custom MCP добавьте выданный HTTPS URL с окончанием `/mcp` и настройте HTTP заголовок `Authorization` со значением `Bearer <токен>`. Если форма разделяет Prefix и Token, укажите `Bearer` в Prefix, а в Token вставьте только значение ключа. Это статическая авторизация заголовком; не вставляйте ключ в OAuth scopes. Notion описывает header-based authentication в [документации MCP connections](https://www.notion.com/help/mcp-connections-for-custom-agents).
 
 При смене временного домена обновите URL в Notion, оставив тот же токен. Токен не является GitHub personal access token и не хранится в этом репозитории. Не публикуйте `connection.md`, `.runtime/` или значения ключей. Ссылки последней команды Start/Restart/Links записываются в приватный `.runtime/links.txt`; если выбрано одно подключение, файл содержит только его результат. Закрытие PowerShell после Start оставляет серверы работающими; ПК должен быть включён.

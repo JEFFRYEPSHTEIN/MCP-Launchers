@@ -38,6 +38,40 @@ In Notion, add the server's printed `/mcp` URL as a custom MCP connection. Confi
 
 Restarting a tunnel can change the URL; it does not by itself change the server token. Update the URL in Notion and keep using that server's existing token. If a token must be rotated, follow the installed MCP server's own instructions and reconnect Notion with the replacement. Never use a GitHub personal access token here, and never commit an MCP token, `.runtime/`, or `connection.md` to GitHub.
 
+### Copy a token with one command
+
+Double-click `Get-MCP-Token.cmd`, paste the full path to `blender.exe`, `RobloxStudioBeta.exe`, `rojo.exe`, or an installed MCP server folder, and press Enter. The existing token for that configured MCP is copied to the clipboard. Paste it into your client's token field.
+
+From PowerShell in this repository, pass the path directly:
+
+```powershell
+.\Get-MCP-Token.ps1 'C:\path with spaces\to\blender.exe'
+.\Get-MCP-Token.ps1 'C:\path\to\filesystem-mcp'
+.\Get-MCP-Token.ps1 -Server Roblox-Studio
+.\Get-MCP-Token.ps1 -Server Rojo -Header
+```
+
+`-Header` copies the full `Authorization: Bearer <token>` header. Use `-Server Filesystem`, `Blender`, `Roblox-Studio`, or `Rojo` to choose a server directly. Known program names select the corresponding server in your private map; the token is read from that MCP server's `.runtime/config.json`. The supplied program is never run. A shared `node.exe` does not identify one MCP, so supply its server folder or `-Server`.
+
+Retrieval works while the MCP is stopped and does not change its token. By default the secret goes only to the clipboard. Add `-Show` only when you want to print the token or capture it into a PowerShell variable:
+
+```powershell
+$token = .\Get-MCP-Token.ps1 -Server Blender -Show
+```
+
+For a different server map, add `-MappingPath 'C:\path\to\private-servers.json'`. If script execution is blocked, use `Get-MCP-Token.cmd` or `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Get-MCP-Token.ps1 -Server Blender`. No tokens are included in these scripts or written to repository files.
+
+### Separate CMD / PC Control MCP
+
+If you also installed the separate CMD / PC Control MCP, copy its existing token with:
+
+```powershell
+$cmdDataDirectory = if ($env:PC_MCP_DATA_DIR) { $env:PC_MCP_DATA_DIR } else { Join-Path $env:LOCALAPPDATA 'PcControlMcp' }
+(Get-Content -LiteralPath (Join-Path $cmdDataDirectory 'token.json') -Raw | ConvertFrom-Json).token | Set-Clipboard
+```
+
+The token must already have been created by that server's setup. If its data directory was set with a launch argument, assign that directory to `$cmdDataDirectory` instead. This repository's launcher and `Get-MCP-Token.ps1` support the four servers listed above; CMD / PC Control uses its own launch scripts and private token store. Keep its `token.json` out of GitHub as well.
+
 The individual `.cmd` launchers start one service. For Blender, open the scene and enable its MCP add-on. For Roblox Studio, open a Place and enable **Assistant → … → Manage MCP Servers → Enable Studio as MCP server**. Rojo's MCP service and Rojo's Studio synchronization are separate: start synchronization with the `rojo_serve` tool when needed.
 
 ## Check and manage
