@@ -1,0 +1,6 @@
+[
+  { "id": "Filesystem", "label": "Filesystem", "projectDirectory": "C:\\path\\to\\filesystem-mcp", "serverIdentity": "logicc-filesystem" },
+  { "id": "Blender", "label": "Blender", "projectDirectory": "C:\\path\\to\\blender-mcp", "serverIdentity": "notion-blender" },
+  { "id": "Roblox-Studio", "label": "Roblox Studio", "projectDirectory": "C:\\path\\to\\roblox-studio-mcp", "serverIdentity": "notion-roblox-studio" },
+  { "id": "Rojo", "label": "Rojo", "projectDirectory": "C:\\path\\to\\rojo-mcp", "serverIdentity": "notion-rojo" }
+]

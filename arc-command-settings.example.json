@@ -1,0 +1,7 @@
+{
+  "projectRoot": "C:\\path\\to\\roblox-project",
+  "rojoExecutable": "C:\\path\\to\\rojo.exe",
+  "studioExecutable": "C:\\path\\to\\RobloxStudioBeta.exe",
+  "placeFile": "C:\\path\\to\\place.rbxlx",
+  "servePort": 34872
+}

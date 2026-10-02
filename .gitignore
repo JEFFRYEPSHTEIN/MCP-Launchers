@@ -1,0 +1,7 @@
+.runtime/
+*.log
+*.pid
+.kiro/
+.env
+.env.*
+!.env.example
