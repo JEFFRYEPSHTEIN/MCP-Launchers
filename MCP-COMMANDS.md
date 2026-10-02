@@ -2,6 +2,9 @@
 
 Откройте PowerShell в корневой папке репозитория. Сначала создайте `.runtime\servers.json` по инструкции в [README.md](README.md), указав пути к MCP-серверам на этом ПК.
 
+> [!IMPORTANT]
+> **Перед `Start All` обязательно выберите рабочую папку.** `projectDirectory` в карте — папка установки MCP. Для файлов нужен `allowedDirectory` в конфиге Filesystem; для сборки — `projectRoot` в Rojo или ARC-профиле. Папку можно задать сразу и сменить позже, применив настройки. [Пошаговая инструкция](WORKING-FOLDERS.md).
+
 ```powershell
 .\MCP-Commands.ps1 Help
 ```
@@ -93,7 +96,7 @@ $cmdDataDirectory = if ($env:PC_MCP_DATA_DIR) { $env:PC_MCP_DATA_DIR } else { Jo
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\MCP-Commands.ps1 Start All
 ```
 
-Для запуска с двойным щелчком есть `Start-All.cmd`, `Filesystem.cmd`, `Blender.cmd`, `Roblox-Studio.cmd` и `Rojo.cmd`. Start/Restart Rojo применяет локальный профиль, если он настроен.
+Для запуска с двойным щелчком есть `Start-All.cmd`, `Filesystem.cmd`, `Blender.cmd`, `Roblox-Studio.cmd` и `Rojo.cmd`. Если настроен ARC-профиль, используйте `MCP-Commands.ps1 Start All` или `Start Rojo` / `Restart Rojo`: эти команды применяют выбранный профиль. Прямой `Start-All.cmd` его не применяет.
 
 Если после аварийного завершения сохранилась запись `running=true`, команды проверяют оба файла владельца, отсутствие записанного процесса и отсутствие TCP-слушателя на настроенном порту. Только при однозначном подтверждении остановки они сохраняют резервную копию записи и разрешают штатный запуск. При живом процессе, занятом порте или неполных данных команда завершится ошибкой. Параметр `-NoRecovery` запрещает такое восстановление. Не удаляйте файлы владельца вручную.
 

@@ -2,6 +2,11 @@
 
 PowerShell commands for starting, checking, and stopping four locally installed MCP servers: Filesystem, Blender, Roblox Studio, and Rojo. The scripts open a temporary HTTPS tunnel so a remote MCP client such as Notion can reach a server on this PC.
 
+> [!IMPORTANT]
+> **Choose your working folder before connecting a client and starting work.** Filesystem needs an allowed folder; Rojo needs the folder containing your project's `default.project.json`. The `projectDirectory` in the server map is the MCP installation folder. Read [Choose or change a working folder](WORKING-FOLDERS.md) before running `Start All`.
+>
+> **Перед началом работы обязательно выберите свою рабочую папку.** Её можно задать сразу и сменить позже, применив настройки сервера. [Инструкция на русском](WORKING-FOLDERS.md).
+
 ## Requirements
 
 - Windows PowerShell 5.1 or later and Node.js.
@@ -20,13 +25,26 @@ notepad .runtime\servers.json
 
 In `.runtime\servers.json`, change each `projectDirectory` to the folder containing that MCP server's launcher files. Keep the supplied server IDs and identities aligned with the server's own configuration. Do not put API keys or bearer tokens in this map. Each server keeps its key and connection details in its own private runtime folder.
 
+### Choose the working folder
+
+Configure the installed servers before connecting a client:
+
+| Server | Working-folder setting |
+| --- | --- |
+| Filesystem | `allowedDirectory` in the installed server's `.runtime/config.json`: the existing folder the client may read and edit. |
+| Rojo | `projectRoot` in that server's `.runtime/config.json`: the existing folder containing `default.project.json`. With the optional ARC profile, choose `projectRoot` and `rojoExecutable` in this launcher's `.runtime/arc-command-settings.json` and apply them with `.\Arc-Commands.ps1 Mcp`. |
+
+You can choose your own folder during setup or change it later. There is no automatic folder picker. A running Filesystem server needs a stop/edit/start cycle; the ARC `Mcp` command applies a Rojo profile change using the server's supported shutdown and startup. After applying a change, check the selected folder with `Status` and update the client URL if the temporary hostname changed. Keep the existing server token. Follow the complete steps in [WORKING-FOLDERS.md](WORKING-FOLDERS.md).
+
 ## Start and connect
 
-Double-click `Start-All.cmd`, or from PowerShell in this folder run:
+After selecting the working folders, from PowerShell in this folder run:
 
 ```powershell
 .\MCP-Commands.ps1 Start All
 ```
+
+Without an ARC profile, you can also double-click `Start-All.cmd`. When using the ARC profile, use the command above so Rojo receives the chosen project settings.
 
 Copy the current `/mcp` URL printed for each server into a separate custom MCP connection in your client. Each server has a different Bearer token; details are below. A temporary HTTPS hostname can change after a restart, so update that server's URL in the client when it changes. Never publish a token or `connection.md` file.
 
