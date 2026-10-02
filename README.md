@@ -40,6 +40,18 @@ Restarting a tunnel can change the URL; it does not by itself change the server 
 
 ### Copy a token with one command
 
+For a token with no path entry, double-click the matching file in the repository root:
+
+| MCP server | File |
+| --- | --- |
+| Filesystem | `Token-Filesystem.cmd` |
+| Blender | `Token-Blender.cmd` |
+| Roblox Studio | `Token-Roblox-Studio.cmd` |
+| Rojo | `Token-Rojo.cmd` |
+| Separate CMD / PC Control MCP | `Token-CMD.cmd` |
+
+Each file copies only its server's existing token and keeps the result window open. Run the one you need, then paste into the client's Token field. The four standard servers use your private `.runtime/servers.json`; CMD uses its separate token store described below. From a terminal you can add `-Header`, for example `Token-Rojo.cmd -Header`, to copy the complete Authorization header, or `-Show` to explicitly print the value.
+
 Double-click `Get-MCP-Token.cmd`, paste the full path to `blender.exe`, `RobloxStudioBeta.exe`, `rojo.exe`, or an installed MCP server folder, and press Enter. The existing token for that configured MCP is copied to the clipboard. Paste it into your client's token field.
 
 From PowerShell in this repository, pass the path directly:
@@ -64,6 +76,12 @@ For a different server map, add `-MappingPath 'C:\path\to\private-servers.json'`
 ### Separate CMD / PC Control MCP
 
 If you also installed the separate CMD / PC Control MCP, copy its existing token with:
+
+```powershell
+.\Token-CMD.cmd
+```
+
+For a nonstandard token file, use `.\Token-CMD.cmd -TokenFilePath 'C:\path\to\private\token.json'`. The underlying `Get-CMD-MCP-Token.ps1` also accepts `-Header` and `-Show`. It reads the existing token without running or installing that server. The equivalent direct PowerShell command is:
 
 ```powershell
 $cmdDataDirectory = if ($env:PC_MCP_DATA_DIR) { $env:PC_MCP_DATA_DIR } else { Join-Path $env:LOCALAPPDATA 'PcControlMcp' }
